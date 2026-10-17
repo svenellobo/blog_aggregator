@@ -54,3 +54,11 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 
 }
+
+func handlerReset(s *state, cmd command) error {
+	err := s.db.Reset(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
