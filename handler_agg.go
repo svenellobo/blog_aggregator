@@ -12,7 +12,7 @@ import (
 func handlerAgg(s *state, cmd command) error {
 	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
 	if err != nil {
-		return nil
+		return err
 	}
 
 	fmt.Printf("Feed: %+v", feed)
@@ -51,4 +51,15 @@ func handlerAddFeed(s *state, cmd command) error {
 
 	return nil
 
+}
+
+func handlerListFeeds (s *state, cmd command) error {
+	feeds, err := s.db.GetFeed(context.Background())
+	if err != nil {
+		return fmt.Errorf("couldn't fetch list of feeds: %w", err)
+	}
+	for _, feed := range feeds {
+		fmt.Printf("Feed name: %s; Feed URL: %s; Created by: %s\n", feed.FeedName, feed.Url, feed.UserName)
+	}
+	return nil
 }
