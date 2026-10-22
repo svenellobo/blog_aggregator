@@ -21,20 +21,20 @@ func main() {
 	dbQueries := database.New(db)
 
 	currentState := &state{
-		db: dbQueries,
+		db:  dbQueries,
 		cfg: &cfg,
 	}
-
-	
 
 	commandsCollection := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
-	
+
 	commandsCollection.register("login", handlerLogin)
-	commandsCollection.register("register", handlerRegister)	
+	commandsCollection.register("register", handlerRegister)
 	commandsCollection.register("reset", handlerReset)
 	commandsCollection.register("users", handlerGetUsers)
+	commandsCollection.register("agg", handlerAgg)
+	commandsCollection.register("addfeed", handlerAddFeed)
 
 	if len(os.Args) < 2 {
 		log.Fatal("not enough arguments")
@@ -52,7 +52,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	fmt.Println(cfg)
 
 }

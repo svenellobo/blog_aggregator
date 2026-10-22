@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"	
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,20 +28,19 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
-
 func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
-		return errors.New("There are no command arguments")
+		return errors.New("there are no command arguments")
 	}
 	name := cmd.args[0]
 	now := time.Now()
-	params := database.CreateUserParams {
-		ID: uuid.New(),
+	params := database.CreateUserParams{
+		ID:        uuid.New(),
 		CreatedAt: now,
 		UpdatedAt: now,
-		Name: name,
+		Name:      name,
 	}
-	
+
 	user, err := s.db.CreateUser(context.Background(), params)
 	if err != nil {
 		return fmt.Errorf("couldn't create user: %w", err)
@@ -73,8 +72,8 @@ func handlerGetUsers(s *state, cmd command) error {
 			fmt.Printf("* %s (current)\n", user.Name)
 		} else {
 			fmt.Printf("* %s\n", user.Name)
-		}		
+		}
 	}
-	
+
 	return nil
 }
