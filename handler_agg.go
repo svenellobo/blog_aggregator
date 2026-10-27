@@ -49,12 +49,25 @@ func handlerAddFeed(s *state, cmd command) error {
 
 	fmt.Printf("Feed: %+v\n", feed)
 
+	newFeedFollow := database.CreateFeedFollowParams {
+		ID: uuid.New(),
+		CreatedAt: now,
+		UpdatedAt: now,
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+
+	_, err2 := s.db.CreateFeedFollow(context.Background(), newFeedFollow)
+	if err2 != nil {
+		return fmt.Errorf("feed follow failed: %w, err")
+	}
+
 	return nil
 
 }
 
-func handlerListFeeds (s *state, cmd command) error {
-	feeds, err := s.db.GetFeed(context.Background())
+func handlerListFeeds(s *state, cmd command) error {
+	feeds, err := s.db.GetFeeds(context.Background())
 	if err != nil {
 		return fmt.Errorf("couldn't fetch list of feeds: %w", err)
 	}
