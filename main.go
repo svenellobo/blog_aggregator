@@ -33,10 +33,11 @@ func main() {
 	commandsCollection.register("reset", handlerReset)
 	commandsCollection.register("users", handlerGetUsers)
 	commandsCollection.register("agg", handlerAgg)
-	commandsCollection.register("addfeed", handlerAddFeed)
+	commandsCollection.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	commandsCollection.register("feeds", handlerListFeeds)
-	commandsCollection.register("follow",handlerFollow)
-	commandsCollection.register("following",handlerFollowing)
+	commandsCollection.register("follow", middlewareLoggedIn(handlerFollow))
+	commandsCollection.register("following",middlewareLoggedIn(handlerFollowing))
+	commandsCollection.register("unfollow",middlewareLoggedIn(handlerUnfollow))
 
 	if len(os.Args) < 2 {
 		log.Fatal("not enough arguments")
