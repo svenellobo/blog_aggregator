@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"	
+	"database/sql"
 	"log"
 	"os"
 
@@ -36,8 +36,8 @@ func main() {
 	commandsCollection.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	commandsCollection.register("feeds", handlerListFeeds)
 	commandsCollection.register("follow", middlewareLoggedIn(handlerFollow))
-	commandsCollection.register("following",middlewareLoggedIn(handlerFollowing))
-	commandsCollection.register("unfollow",middlewareLoggedIn(handlerUnfollow))
+	commandsCollection.register("following", middlewareLoggedIn(handlerFollowing))
+	commandsCollection.register("unfollow", middlewareLoggedIn(handlerUnfollow))
 
 	if len(os.Args) < 2 {
 		log.Fatal("not enough arguments")
@@ -55,7 +55,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	
 
 }
