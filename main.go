@@ -17,6 +17,9 @@ func main() {
 	}
 
 	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("error opening database: %v", err)
+	}
 	dbQueries := database.New(db)
 
 	currentState := &state{
@@ -38,6 +41,7 @@ func main() {
 	commandsCollection.register("follow", middlewareLoggedIn(handlerFollow))
 	commandsCollection.register("following", middlewareLoggedIn(handlerFollowing))
 	commandsCollection.register("unfollow", middlewareLoggedIn(handlerUnfollow))
+	commandsCollection.register("browse", middlewareLoggedIn(handlerBrowse))
 
 	if len(os.Args) < 2 {
 		log.Fatal("not enough arguments")

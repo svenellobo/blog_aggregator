@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"github.com/svenellobo/blog_aggregator/internal/database"
 )
 
@@ -14,7 +17,7 @@ func handlerAgg(s *state, cmd command) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %s <time_between_reqs> (e.g. 1m)", cmd.name)
 	}
-	
+
 	timeBetweenRequests, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
 		return fmt.Errorf("couldn't parse duration: %w", err)
@@ -100,6 +103,44 @@ func scrapeFeeds(s *state) {
 	}
 
 	for _, item := range feed.Channel.Item {
-		fmt.Printf("Feed: %s --- Title: %s\n", feed.Channel.Title, item.Title)
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+		description := sql.NullString{
+			String: item.Description,
+			Valid:  true,
+		}
+
+		title := sql.NullString{
+			String: item.Title,
+			Valid:  true,
+		}
+		now := time.Now()
+		postParam := database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   now,
+			UpdatedAt:   now,
+			Title:       title,
+			Url:         item.Link,
+			Description: description,
+			PublishedAt: publishedAt,
+			FeedID:      localFeed.ID,
+		}
+		_, err := s.db.CreatePost(context.Background(), postParam)
+		if err != nil {
+			var pqErr *pq.Error
+			if errors.As(err, &pqErr) && string(pqErr.Code) == "23505" {
+				continue
+			}
+			log.Printf("couldn't save post: %v", err)
+			continue
+
+		}
+
 	}
+	fmt.Printf("Feed %s collected, %d posts found\n", feed.Channel.Title, len(feed.Channel.Item))
 }
